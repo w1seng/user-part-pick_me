@@ -1,0 +1,53 @@
+{
+  "manifest_version": "1",
+  "type": "WebApp",
+  "meta": {
+    "name": "Pick Me",
+    "version": "0.0.1",
+    "minimum-overwolf-version": "0.92.300.0",
+    "author": "Overwolf",
+    "icon": "icon.png",
+    "icon_gray": "icon_gray.png",
+    "description": "App that helps you to pick a hero to play."
+  },
+  "permissions": [
+    "GameInfo"
+  ],
+  "data": {
+    "start_window": "index",
+    "windows": {
+      "index": {
+        "file": "index.html",
+        "transparent": false,
+        "clickthrough": false,
+        "resizable": false,
+        "show_in_taskbar": false,
+        "size": {
+          "width": 840,
+          "height": 830
+        },
+        "start_position": {
+          "Top": 0,
+          "Left": 0
+        }
+      }
+    },
+    "game_targeting": {
+        "type": "dedicated",
+        "game_ids": [
+          7314
+        ]
+      },
+    "game_events": [7314],
+    "launch_events": [
+      {
+        "event": "GameLaunch",
+        "event_data": {
+          "game_ids": [
+            7314
+          ]
+        },
+        "start_minimized": false
+      }]
+}
+}

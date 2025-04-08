@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team vs Enemy Layout</title>
+    <script src ="main.js"></script>
+    <style>
+        body, html {
+            overflow: hidden;
+        }
+
+        .geologica-font {
+            font-family: "Geologica", sans-serif;
+            font-weight: 900;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1e1e2e;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        .container, .team, .enemy, .middle, .slots, .slot, .slott, .slote, .role-selector, .Role, .dropdown, .hero-item, .hero-info {
+            display: flex;
+        }
+        .container {
+            width: 900px;
+            height: 750px;
+            border-radius: 10px;
+            background-color: #282a36;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        .team, .enemy {
+            flex-direction: column;
+            padding: 20px;
+            background-color: #44475a;
+        }
+        .team { background-color: #00FF7F; }
+        .enemy { background-color: #FF3131; }
+        h2 {
+            text-align: center;
+            margin-top: -5px;
+            margin-bottom: 15px;
+            color: rgb(40, 42, 54);
+        }
+        .slots {
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            align-items: center;
+        }
+        .slot, .slott, .slote {
+            width: 128px;
+            height: 72px;
+            border-radius: 2px;
+            background-color: #6272a4;
+            align-items: center;
+            justify-content: center;
+        }
+        .middle {
+            flex-direction: column;
+            align-items: start;
+            justify-content: start;
+            background-color: rgb(40, 42, 54);
+            position: relative;
+            padding: 20px;
+        }
+        .role-selector {
+            justify-content: start;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .role-selector button {
+            background: #44475a;
+            border: none;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            transition: 0.3s;
+            align-items: center;
+            justify-content: center;
+        }
+        .role-selector button:hover, .role-selector button.active {
+            box-shadow: 0px 0px 33px 0px rgba(189, 147, 249, 0.53);
+            background: #bf95f9;
+        }
+        .Role {
+            align-items: center;
+            width: 120px;
+            height: 30px;
+            background: #282a36;
+            padding: 5px;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            justify-content: center;
+        }
+        .Role img {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            background-color: #282a36;
+            padding: 10px;
+            border-top: solid 1px #44475a;
+            margin-top: 22px;
+            width: 94.5%;
+            z-index: 1000;
+            max-height: 85%;
+            overflow-y: auto;
+            scrollbar-width: none; /* For Firefox */
+        }
+        .dropdown.show {
+            display: block;
+        }
+        .hero-item {
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .hero-item .slot {
+            margin-right: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-item .hero-info {
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: -20px;
+            margin-left: 5px;
+        }
+        .error-log, .none {
+            display: none;
+        }
+        .win {
+            color: rgb(80, 250, 123);
+            text-shadow: 0 0 5px rgba(80, 250, 123, 0.53);
+        }
+        .lost {
+            color: rgb(255, 85, 85);
+            text-shadow: 0 0 5px rgba(255, 85, 85, 0.53);
+        }
+        .slot img {
+            border-radius: 15px;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+            background: linear-gradient(45deg, #bd93f9, #6272a4);
+            padding: 2px;
+        }
+        .parent {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr 1fr 1.1fr;
+            grid-template-rows: repeat(5, 1fr);
+            gap: 0px;
+        }
+        .team, .enemy {
+            grid-row: span 5;
+        }
+        .middle {
+            grid-column: span 2;
+            grid-row: span 5;
+        }
+        .button-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .round-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            z-index: 2;
+        }
+        
+        .round-button:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+        
+        .settings-panel {
+            width: 185px;
+            background-color: #fff;
+            border-radius: 8px;
+            position: absolute;
+            right: 70%;
+            top: 125%;
+            margin-right: 10px;
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+            z-index: 10;
+        }
+        
+        .settings-panel.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .setting-item {
+            margin-bottom: 15px;
+        }
+        
+        .setting-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            outline: none;
+            border-radius: 4px;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #3498db;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #3498db;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        .value-display {
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+            margin-top: 3px;
+        }
+                
+    </style>
+</head>
+<script src="winrate.js"></script>
+<body>
+    
+<div class="parent">
+    <div class="team">            
+        <h2 class ="geologica-font">Team</h2>
+        <div class="slots">
+            <div class="slott" id="1post"></div>
+            <div class="Role" id = "carrypost"><img src="img/1.png" alt="Role 1"> Carry</div>
+            <div class="slott" id="2post"></div>
+            <div class="Role" id="midpost"><img src="img/2.png" alt="Role 2"> Mid</div>
+            <div class="slott" id="3post"></div>
+            <div class="Role" id="offlanepost"><img src="img/3.png" alt="Role 3"> Offlane</div>
+            <div class="slott" id="4post"></div>
+            <div class="Role" id="supportpost"><img src="img/4.png" alt="Role 4"> Support</div>
+            <div class="slott" id="5post"></div>
+            <div class="Role" id="hardsupportpost"><img src="img/5.png" alt="Role 5"> Hard Support</div>
+        </div>
+    </div>
+    
+    
+    
+        <div class="middle">            
+            <div class="role-selector">
+            <button data-role="0">All</button>
+            <button data-role="1"><img src="img/1.png" alt="Role 1"> 1</button>
+            <button data-role="2"><img src="img/2.png" alt="Role 2"> 2</button>
+            <button data-role="3"><img src="img/3.png" alt="Role 3"> 3</button>
+            <button data-role="4"><img src="img/4.png" alt="Role 4"> 4</button>
+            <button data-role="5"><img src="img/5.png" alt="Role 5"> 5</button>
+            <div class="dropdown" id="dropdown-menu"></div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="enemy">
+        <div class="button-container" style="top: -2%; left: 87%;">
+            <button class="round-button" id="toggleButton">+</button>
+            <div class="settings-panel" id="settingsPanel">
+                <div class="setting-item">
+                    <label for="k1">Suppport synergy</label>
+                    <input type="range" min="0" max="100" value="10" class="slider" id="k1">
+                    <div class="value-display" id="k1Value">10%</div>
+                </div>
+                <div class="setting-item">
+                    <label for="k2">Team synergy</label>
+                    <input type="range" min="0" max="100" value="30" class="slider" id="k2">
+                    <div class="value-display" id="k2Value">30%</div>
+                </div>
+                <div class="setting-item">
+                    <label for="k3">Your conter</label>
+                    <input type="range" min="0" max="100" value="63" class="slider" id="k3">
+                    <div class="value-display" id="k3Value">63%</div>
+                </div>
+                <div class="setting-item">
+                    <label for="k4">You conter</label>
+                    <input type="range" min="0" max="100" value="55" class="slider" id="k4">
+                    <div class="value-display" id="k4Value">55%</div>
+                </div>
+            </div>
+        </div>
+        <h2 class ="geologica-font">Enemy</h2>
+        <div class="slots">
+            <div class="slote" id="1pose"></div>
+            <div class="Role" id = "carrypose"><img src="img/1.png" alt="Role 1"> Carry</div>
+            <div class="slote" id="2pose"></div>
+            <div class="Role" id="midpose"><img src="img/2.png" alt="Role 2"> Mid</div>
+            <div class="slote" id="3pose"></div>
+            <div class="Role" id="offlanepose"><img src="img/3.png" alt="Role 3"> Offlane</div>
+            <div class="slote" id="4pose"></div>
+            <div class="Role" id="supportpose"><img src="img/4.png" alt="Role 4"> Support</div>
+            <div class="slote" id="5pose"></div>
+            <div class="Role" id="hardsupportpose"><img src="img/5.png" alt="Role 5"> Hard Support</div>
+        </div>
+    </div>
+</div>
+    
+    <textarea id="error-log" class="error-log" ></textarea>
+    <textarea id ="bans" class="none"></textarea>
+    <textarea id="textareaMessage" class="none"></textarea>
+    
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.slider').forEach(slider => {
+        const id = slider.id;
+        const savedValue = localStorage.getItem(id);
+        if (savedValue !== null) {
+            slider.value = savedValue;
+            document.getElementById(id + 'Value').textContent = savedValue + '%';
+        }
+
+        slider.addEventListener('input', () => {
+            const value = slider.value;
+            document.getElementById(id + 'Value').textContent = value + '%';
+            localStorage.setItem(id, value);
+        });
+            });
+            });
+
+        const toggleButton = document.getElementById('toggleButton');
+        const settingsPanel = document.getElementById('settingsPanel');
+        
+        // Перемикання видимості панелі
+        toggleButton.addEventListener('click', function() {
+            settingsPanel.classList.toggle('visible');
+        });
+        
+        // Оновлення значень ползунків
+        function updateSliderValue(sliderId, valueId) {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(valueId);
+            slider.addEventListener('input', function() {
+                const activeButton = document.querySelector('.role-selector button.active');
+                if (activeButton) {
+                setActiveButton(activeButton);
+                }
+                valueDisplay.textContent = this.value + '%';
+            });
+        }
+        
+        // Ініціалізація для всіх ползунків
+        updateSliderValue('k1', 'k1Value');
+        updateSliderValue('k2', 'k2Value');
+        updateSliderValue('k3', 'k3Value');
+        updateSliderValue('k4', 'k4Value');
+        const roleButtons = document.querySelectorAll('.role-selector button');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        let activeDropdown = null;
+        const errorLog = document.getElementById('error-log');
+        let loadedObject={
+                "team": {
+                },
+                "enemy": {
+                }
+        };
+        function logError(message) {
+            console.error(message);
+            errorLog.value += message + "\n";
+        }
+        function clickactivebutton(){
+            const roleButtons = document.querySelectorAll('.role-selector button');
+            roleButtons.forEach(button => {
+                if (button.classList.contains('active')){
+                    button.click();
+                }
+            });
+        }
+        // Функція, яку ви хочете викликати при зміні тексту
+        function onTextChange() {
+            const errorLog = document.getElementById('error-log');
+            let loadedObject;
+
+            try {
+                loadedObject = JSON.parse(errorLog.value);
+            } catch (e) {
+                logError("Помилка розбору JSON:", e);
+                return;
+            }
+
+            let hasZeroPos = false; // Фіксуємо, чи є хоч один герой з "0pos"
+
+            // Оновлення команди
+            const teamKeys = Object.keys(loadedObject.team);
+            teamKeys.forEach((hero, i) => {
+                const position = loadedObject.team[hero];
+
+                if (position === "0pos") {
+                    hasZeroPos = true; // Якщо знайдено хоча б одного героя з "0pos"
+                    const id = (i + 1) + "post"; // Генеруємо id
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.innerHTML = `<img src="Hero_photos/${hero}.png" alt="${hero}">`;
+                    }
+                } else {
+                hasZeroPos = false;
+                // Оновлюємо відповідний `position+"t"`
+                const positionElement = document.getElementById(position + "t");
+                if (positionElement) {
+                    positionElement.innerHTML = `<img src="Hero_photos/${hero}.png" alt="${hero}">`;
+                }
+            }
+            });
+
+            // Оновлення ворогів
+            const enemyKeys = Object.keys(loadedObject.enemy);
+            enemyKeys.forEach((hero, i) => {
+                const position = loadedObject.enemy[hero];
+
+                if (position === "0pos") {
+                    hasZeroPos = true;
+                    const id = (i + 1) + "pose";
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.innerHTML = `<img src="Hero_photos/${hero}.png" alt="${hero}">`;
+                    }
+                } else {
+                hasZeroPos = false;
+                // Оновлюємо відповідний `position+"e"`
+                const positionElement = document.getElementById(position + "e");
+                if (positionElement) {
+                    positionElement.innerHTML = `<img src="Hero_photos/${hero}.png" alt="${hero}">`;
+                }
+            }
+            });
+
+            // Якщо знайдено хоча б одного героя з "0pos", змінюємо всі ролі на "Unknown"
+            if (hasZeroPos) {
+                document.querySelectorAll('.Role').forEach(element => {
+                    const text = element.querySelector('img')?.nextSibling;
+                    if (text) text.textContent = "Unknown";
+
+                    const imgElement = element.querySelector('img');
+                    if (imgElement) {
+                        imgElement.src = 'img/Unknown.png';
+                        imgElement.alt = 'Unknown';
+                    }
+                });
+            } else {
+                const text = document.getElementById('carrypost').querySelector('img')?.nextSibling;
+                if (text) text.textContent = "Carry";
+                const imgElement = document.getElementById('carrypost').querySelector('img');
+                if (imgElement) {
+                    imgElement.src = 'img/1.png';
+                    imgElement.alt = 'Role 1';
+                }
+                const text1 = document.getElementById('midpost').querySelector('img')?.nextSibling;
+                if (text1) text1.textContent = "Mid";
+                const imgElement1 = document.getElementById('midpost').querySelector('img');
+                if (imgElement1) {
+                    imgElement1.src = 'img/2.png';
+                    imgElement1.alt = 'Role 2';
+                }
+                const text2 = document.getElementById('offlanepost').querySelector('img')?.nextSibling;
+                if (text2) text2.textContent = "Offlane";
+                const imgElement2 = document.getElementById('offlanepost').querySelector('img');
+                if (imgElement2) {
+                    imgElement2.src = 'img/3.png';
+                    imgElement2.alt = 'Role 3';
+                }
+                const text3 = document.getElementById('supportpost').querySelector('img')?.nextSibling;
+                if (text3) text3.textContent = "Support";
+                const imgElement3 = document.getElementById('supportpost').querySelector('img');
+                if (imgElement3) {
+                    imgElement3.src = 'img/4.png';
+                    imgElement3.alt = 'Role 4';
+                }
+                const text4 = document.getElementById('hardsupportpost').querySelector('img')?.nextSibling;
+                if (text4) text4.textContent = "Hard Support";
+                const imgElement4 = document.getElementById('hardsupportpost').querySelector('img');
+                if (imgElement4) {
+                    imgElement4.src = 'img/5.png';
+                    imgElement4.alt = 'Role 5';
+                }
+                const text5 = document.getElementById('carrypose').querySelector('img')?.nextSibling;
+                if (text5) text5.textContent = "Carry";
+                const imgElement5 = document.getElementById('carrypose').querySelector('img');
+                if (imgElement5) {
+                    imgElement5.src = 'img/1.png';
+                    imgElement5.alt = 'Role 1';
+                }
+                const text6 = document.getElementById('midpose').querySelector('img')?.nextSibling;
+                if (text6) text6.textContent = "Mid";
+                const imgElement6 = document.getElementById('midpose').querySelector('img');
+                if (imgElement6) {
+                    imgElement6.src = 'img/2.png';
+                    imgElement6.alt = 'Role 2';
+                }
+                const text7 = document.getElementById('offlanepose').querySelector('img')?.nextSibling;
+                if (text7) text7.textContent = "Offlane";
+                const imgElement7 = document.getElementById('offlanepose').querySelector('img');
+                if (imgElement7) {
+                    imgElement7.src = 'img/3.png';
+                    imgElement7.alt = 'Role 3';
+                }
+                const text8 = document.getElementById('supportpose').querySelector('img')?.nextSibling;
+                if (text8) text8.textContent = "Support";
+                const imgElement8 = document.getElementById('supportpose').querySelector('img');
+                if (imgElement8) {
+                    imgElement8.src = 'img/4.png';
+                    imgElement8.alt = 'Role 4';
+                }
+                const text9 = document.getElementById('hardsupportpose').querySelector('img')?.nextSibling;
+                if (text9) text9.textContent = "Hard Support";
+                const imgElement9 = document.getElementById('hardsupportpose').querySelector('img');
+                if (imgElement9) {
+                    imgElement9.src = 'img/5.png';
+                    imgElement9.alt = 'Role 5';
+                }
+
+            }
+        }
+
+
+
+        // Елемент, який ви хочете відстежуват
+
+
+        errorLog.addEventListener('input', onTextChange);
+        bans.addEventListener('input', clickactivebutton);
+
+        async function setActiveButton(button) {
+            bans = document.getElementById('bans').value.split(",");
+            const role = button.getAttribute('data-role');
+            dropdownMenu.innerHTML = ''; // Очищення перед додаванням нових героїв
+            dropdownMenu.style.left = '0'; 
+            dropdownMenu.style.top = `${button.offsetTop + button.offsetHeight}px`;
+
+            if (activeDropdown) {
+                activeDropdown.classList.remove('active');
+            }
+            activeDropdown = button;
+            button.classList.add('active');
+            dropdownMenu.classList.add('show');
+
+            try {
+                let k1 = parseFloat(document.getElementById('k1Value').value)/100;
+                let k2 = parseFloat(document.getElementById('k2Value').value)/100;
+                let k3 = parseFloat(document.getElementById('k3Value').value)/100;
+                let k4 = parseFloat(document.getElementById('k4Value').value)/100;
+                const winrates = await calculateWinrate(loadedObject, role+"pos",bans,k1,k2,k3,k4); // Асинхронний виклик
+            winrates.forEach(([heroName, winrate], i) => {
+                const heroItem = document.createElement('div');
+                heroItem.classList.add('hero-item');
+                heroItem.id = `hero-${role}-${i}`;
+                let className = winrate < 50 ? 'lost' : 'win';
+
+                // Calculate the gradient color based on position
+                const gradientColor = `hsl(${265 + (i * 20)}, 89%, 78%)`; // Adjust the hue based on position
+
+                heroItem.innerHTML = `
+                    <div class="slot" id="${role}-${i}"> 
+                        <img src="Hero_photos/${heroName}.png" alt="${heroName}" style="border-color: ${gradientColor};">
+                    </div>
+                    <div class="hero-info">
+                        <span class="hero-name-${role}" id="hero-name-${i}">${heroName}</span>
+                        <span class="hero-winrate-${role}" id="hero-winrate-${i}">Winrate: <span class="${className}">${winrate}%</span></span>
+                    </div>
+                `;
+
+                dropdownMenu.appendChild(heroItem);
+            });
+            } catch (error) {
+                logError("Помилка отримання winrate: " + error.message);
+            }
+        }
+
+
+        roleButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation(); 
+                setActiveButton(button);
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.role-selector button')) {
+                return;
+            }
+            if (activeDropdown) {
+                activeDropdown.classList.remove('active');
+            }
+            dropdownMenu.classList.remove('show');
+            activeDropdown = null;
+        });
+
+        // Set the "All" button as active on page load
+        window.addEventListener('load', () => {
+            const allButton = document.querySelector('.role-selector button[data-role="0"]');
+            setActiveButton(allButton);
+        });
+    </script>
+</body>
+</html>
