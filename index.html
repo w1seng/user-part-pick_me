@@ -7,7 +7,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team vs Enemy Layout</title>
-    <script src ="main.js"></script>
     <style>
         body, html {
             overflow: hidden;
@@ -271,6 +270,7 @@
     </style>
 </head>
 <script src="winrate.js"></script>
+<script src = "main.js"></script>
 <body>
     
 <div class="parent">
@@ -355,6 +355,7 @@
     <textarea id="textareaMessage" class="none"></textarea>
     
     <script>
+        
         window.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.slider').forEach(slider => {
         const id = slider.id;
@@ -387,7 +388,7 @@
             slider.addEventListener('input', function() {
                 const activeButton = document.querySelector('.role-selector button.active');
                 if (activeButton) {
-                setActiveButton(activeButton);
+                    setActiveButton(activeButton);
                 }
                 valueDisplay.textContent = this.value + '%';
             });
@@ -401,7 +402,7 @@
         const roleButtons = document.querySelectorAll('.role-selector button');
         const dropdownMenu = document.getElementById('dropdown-menu');
         let activeDropdown = null;
-        const errorLog = document.getElementById('error-log');
+        const errorLog = document.getElementById('textareaMessage');
         let loadedObject={
                 "team": {
                 },
@@ -423,7 +424,6 @@
         // Функція, яку ви хочете викликати при зміні тексту
         function onTextChange() {
             const errorLog = document.getElementById('error-log');
-            let loadedObject;
 
             try {
                 loadedObject = JSON.parse(errorLog.value);
@@ -588,11 +588,11 @@
             dropdownMenu.classList.add('show');
 
             try {
-                let k1 = parseFloat(document.getElementById('k1Value').value)/100;
-                let k2 = parseFloat(document.getElementById('k2Value').value)/100;
-                let k3 = parseFloat(document.getElementById('k3Value').value)/100;
-                let k4 = parseFloat(document.getElementById('k4Value').value)/100;
-                const winrates = await calculateWinrate(loadedObject, role+"pos",bans,k1,k2,k3,k4); // Асинхронний виклик
+            const k1 = parseFloat(document.getElementById('k1Value').textContent)/100;
+            const k2 = parseFloat(document.getElementById('k2Value').textContent)/100;
+            const k3 = parseFloat(document.getElementById('k3Value').textContent)/100;
+            const k4 = parseFloat(document.getElementById('k4Value').textContent)/100;
+            const winrates = await calculateWinrate(loadedObject, role+"pos",bans,k1,k2,k3,k4); // Асинхронний виклик
             winrates.forEach(([heroName, winrate], i) => {
                 const heroItem = document.createElement('div');
                 heroItem.classList.add('hero-item');

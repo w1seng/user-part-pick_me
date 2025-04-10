@@ -1,9 +1,13 @@
-const fs = require('fs').promises;
 async function calculateWinrate(finalData, role,bans,k1,k2,k3,k4) {
     let heroData;
     try {
-        const response = await fetch('./Hero_data.json');
-        heroData = await response.json();
+        try {
+            const response = await fetch('./Hero_data.json');
+            heroData = await response.json();
+        } catch (error) {
+            console.error("Error fetching or parsing Hero_data.json:", error.message);
+            return null;
+        }
     } catch (error) {
         console.error("Помилка при зчитуванні файлу:", error);
         return null;
@@ -55,10 +59,10 @@ async function calculateWinrate(finalData, role,bans,k1,k2,k3,k4) {
             }
         }
         let WR_base = parseFloat(hero.winRate); // Базовий вінрейт
-        let S_laning_synergy = (parseFloat(hero["laning_with"][support]) - 50) * k1|| 0; // Синергія з сапортом
+        let S_laning_synergy = (parseFloat(hero["laning_with"][support]) - 50) * k1 || 0; // Синергія з сапортом
         let S_team_synergy = 0;
         for (let ally of allies) {
-            S_team_synergy += (parseFloat(hero["playing_with"][ally])-50)*k2 || 0; // Синергія з командою
+            S_team_synergy += (parseFloat(hero["playing_with"][ally])-50) * k2 || 0; // Синергія з командою
         }
         let S_counters = 0;
         for (let enemy of enemies) {
